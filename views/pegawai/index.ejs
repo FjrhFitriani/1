@@ -1,0 +1,185 @@
+<div class="box">
+  <div class="box-header">
+    <div class="col-md-6" style="padding: 0;">
+        <button class="form-control btn btn-primary" data-toggle="modal" data-target="#modal-pegawai-add"><i class="glyphicon glyphicon-plus-sign"></i> Tambah Data</button>
+    </div>
+    <div class="col-md-3">
+        <a href="/pegawai/export" target="_blank" class="form-control btn btn-default"><i class="glyphicon glyphicon glyphicon-floppy-save"></i> Export Data Excel</a>
+    </div>
+  </div>
+  <div class="box-body">
+    <table id="list-data" class="table table-bordered table-striped" width="100%">
+	    <thead>
+            <tr>
+                <th>Nama</th>
+                <th>No Telp</th>
+                <th>Asal kota</th>
+                <th>Jenis Kelamin</th>
+                <th>Posisi</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-pegawai-add" role="dialog">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+		<div class="col-md-offset-1 col-md-10 col-md-offset-1 well">
+      <div class="form-msg"></div>
+      <%- include add.ejs %>
+		</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-pegawai-update" role="dialog">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+  		<div class="col-md-offset-1 col-md-10 col-md-offset-1 well">
+        <div class="form-msg"></div>
+        <%- include update.ejs %>
+  		</div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#list-data').DataTable( {
+        ajax: {
+        	url: '/pegawai/get',
+        	type: 'GET'
+        },
+        columns: [
+            { data: "name" },
+            { data: "telp" },
+            { data: "kota.kota_name" },
+            { data: "gender" },
+            { data: "posisi.posisi_name" },
+            { data: "status.status_name"},
+            { data: "act", className: "text-center" }
+        ]
+    });
+
+    socket.connect('/public/join');
+    io.socket.on('pegawai_add', function (out) {
+    	if (out.status) {
+			 $('#list-data').DataTable().ajax.reload();
+    	}
+  	});
+  	io.socket.on('pegawai_update', function (out) {
+    	if (out.status) {
+			 $('#list-data').DataTable().ajax.reload();
+    	}
+  	});
+  	io.socket.on('pegawai_delete', function (out) {
+    	if (out.status) {
+			 $('#list-data').DataTable().ajax.reload();
+    	}
+  	});
+  });
+
+  
+  $(document).on('submit', '#form-pegawai-add', function(e) {
+  	e.preventDefault();
+    console.log(data);
+    var data = $(this).serialize();
+    $.post('/pegawai/add', data, function(out) {
+		  $('#modal-pegawai-add').modal('hide');
+    	if (out.status) {
+        $(this).find('input[name:"pegawai_name"]').val('');
+        swal('Success', out.msg, 'success');
+      }else{
+    		swal('Failed', out.msg, 'error');
+    	}
+    });
+  });
+
+  $(document).on('click', '.btn-pegawai-update', function() {
+  	var pegawai_id 		= $(this).data('id');
+
+  	$.get('/pegawai/show_edit/'+pegawai_id, function(out) {
+  		var form = $('#form-pegawai-update');
+      console.log(out);
+  		if (out.status) {
+  			form.find('input[name="id"]').val(out.data.id);
+        form.find('input[name="name"]').val(out.data.name);
+        form.find('input[name="telp"]').val(out.data.telp);
+        form.find('select[name="kota_name"]').find('option[value="'+out.data.kota+'"]').prop('selected', true);
+        form.find('input[name="gender"][value="'+out.data.gender+'"]').prop('checked', true);
+        form.find('select[name="posisi_name"]').find('option[value="'+out.data.posisi+'"]').prop('selected', true);
+        form.find('select[name="status_name"]').find('option[value="'+out.data.status+'"]').prop('selected', true);
+
+  			$('#modal-pegawai-update').modal('show');
+  		} else {
+  			swal('Failed', out.msg, 'error');
+  		}
+  	});
+
+    $('#modal-pegawai-update').modal('show');
+  });
+
+  $(document).on('submit', '#form-pegawai-update', function(e) {
+  	e.preventDefault();
+    console.log(data);
+    var data = $(this).serialize();
+    $.post('/pegawai/update', data, function(out) {
+		  $('#modal-pegawai-update').modal('hide');
+    	if (out.status) {
+    		swal('Success', out.msg, 'success');
+    	} else {
+    		swal('Failed', out.msg, 'error');
+    	}
+    });
+  });
+
+  $(document).on('click', '.btn-pegawai-delete', function() {
+  	var pegawai_id 		= $(this).data('id');
+    console.log(pegawai_id);
+  	swal({
+  		title: 'Delete',
+  		text: "Hapus Data Ini?",
+  		type: 'warning',
+  		showCancelButton: true,
+  		confirmButtonText: 'Ya, Hapus Data Ini',
+  		cancelButtonText: 'Batal',
+  		confirmButtonClass: 'btn btn-success',
+  		cancelButtonClass: 'btn btn-danger'
+  	}).then(function () {
+  	  	$.post('/pegawai/delete', {pegawai_id: pegawai_id}, function(out) {
+  	    	if (out.status) {
+  	    		swal('Success', out.msg, 'success');
+  	    	} else {
+  	    		swal('Failed', out.msg, 'error');
+  	    	}
+  	    });
+  	}, function (dismiss) {
+  		if (dismiss === 'cancel') {}
+  	});
+  });
+
+  $(document).on('submit', '#form-pegawai-import', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+      url: '/pegawai/import',
+      type: 'POST',
+      dataType: 'json',
+      data: new FormData( this ),
+      processData: false,
+      contentType: false
+    })
+    .done(function(out) {
+      $('#modal-pegawai-import').modal('hide');
+      if (out.status) {
+        swal('Success', out.msg, 'success');
+      } else {
+        swal('Failed', out.msg, 'error');
+      }
+    });
+  });
+</script>

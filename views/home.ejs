@@ -1,0 +1,203 @@
+<!-- <style>
+  canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
+</style> -->
+
+<div class="row">
+  <div class="col-lg-3 col-xs-6">
+    <div class="small-box bg-red">
+      <div class="inner">
+        <h3 id="jml_pegawai">
+          <%=jml_pegawai%>
+        </h3>
+        <p>Jumlah Pegawai</p>
+      </div>
+      <div class="icon">
+        <i class="ion ion-ios-contact"></i>
+      </div>
+      <a href="/pegawai" class="small-box-footer">More info
+        <i class="fa fa-arrow-circle-right"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-xs-6">
+    <div class="small-box bg-yellow">
+      <div class="inner">
+        <h3 id="jml_posisi" type="number" step="any">
+          <%=jml_posisi%>
+        </h3>
+        <p>Jumlah Posisi</p>
+      </div>
+      <div class="icon">
+        <i class="ion ion-ios-briefcase-outline"></i>
+      </div>
+      <a href="/posisi" class="small-box-footer">More info
+        <i class="fa fa-arrow-circle-right"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-xs-6">
+    <div class="small-box bg-green">
+      <div class="inner">
+        <h3 id="jml_kota" type="number" step="any">
+          <%=jml_kota%>
+        </h3>
+
+        <p>Jumlah Kota</p>
+      </div>
+      <div class="icon">
+        <i class="ion ion-location"></i>
+      </div>
+      <a href="/kota" class="small-box-footer">More info
+        <i class="fa fa-arrow-circle-right"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-xs-6">
+    <div class="small-box bg-green">
+      <div class="inner">
+        <h3 id="jml_cuti" type="number" step="any">
+          <%=jml_cuti%>
+        </h3>
+
+        <p>Jumlah Pegawai Cuti</p>
+      </div>
+      <div class="icon">
+        <i class="ion ion-location"></i>
+      </div>
+      <a href="/cuti" class="small-box-footer">More info
+        <i class="fa fa-arrow-circle-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="col-lg-6 col-xs-12">
+    <div class="box box-info">
+      <div class="box-header with-border">
+        <i class="fa fa-briefcase"></i>
+        <h3 class="box-title">Statistik
+          <small>Data Posisi</small>
+        </h3>
+
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+          <button type="button" class="btn btn-box-tool" data-widget="remove">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="box-body">
+        <div id="data_posisi" style="height: 300px; width: 100%;"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6 col-xs-12">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <i class="fa fa-briefcase"></i>
+        <h3 class="box-title">Statistik
+          <small>Data Kota</small>
+        </h3>
+
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+          <button type="button" class="btn btn-box-tool" data-widget="remove">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="box-body">
+        <div id="data_kota" style="height: 300px; width: 100%;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/lte/plugins/chartjs/Chart.min.js"></script>
+<!-- <script src="/lte/plugins/chartjs/Chart.bundle.js"></script>
+<script src="/lte/plugins/chartjs/utils.js"></script> -->
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<!-- <script type="text/javascript" src="/js/dependencies/sails.io.js"></script> -->
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    socket.connect('/public/join');
+
+    io.socket.on('posisi_add', function (out) {
+      if (out.status) {
+        var jml_posisi = $('#jml_posisi').text();
+
+        jml_posisi++;
+      }
+    });
+
+    io.socket.on('posisi_delete', function (out) {
+      if (out.status) {
+        $('#jml_posisi').text(jml_posisi); var jml_posisi = $('#jml_posisi').text();
+
+        jml_posisi--;
+        $('#jml_posisi').text(jml_posisi);
+      }
+    });
+  });
+
+  window.onload = function () {
+    var kota = new CanvasJS.Chart("data_kota", {
+      animationEnabled: true,
+      theme: "light1", // "light1", "light2", "dark1", "dark2"
+      data: [{
+        type: "pie",
+        yValueFormatString: "# orang",
+        dataPoints:
+          [
+            // { label: "", y: },
+            { label: "Magelang", y: 1 },
+            { label: "Medan", y: 3 },
+            { label: "Padang", y: 1 },
+            { label: "Cilacap", y: 2 },
+            { label: "Binjai", y: 1 },
+            { label: "Bandung", y: 2 },
+            { label: "Jakarta", y: 1 },
+          ]
+      }]
+    });
+
+    kota.render();
+
+    // var dps = [];
+    // var posisi = new CanvasJS.Chart("data_posisi", {
+    //   animationEnabled: true,
+    //   theme: "light1",
+    //   data: [{
+    //     type: "pie",
+    //     dataPoints: dps
+    //   }]
+    // });
+
+    // function get() {
+    //   label = new text.getElementById('posisi').value,
+    //   yValue = new Number([121, 543 , 76]);
+    //   dps.push({
+    //     label: label,
+    //     y: parseInt(yValue)
+    //   });
+    //   console.log(yValue);
+
+    //   posisi.render();
+
+    // }
+
+    // get();
+
+  }
+</script>

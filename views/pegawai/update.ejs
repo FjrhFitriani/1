@@ -1,0 +1,66 @@
+<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<h3 style="display:block; text-align:center;">Update Data Pegawai</h3>
+
+  		  <form id="form-pegawai-update">
+  	        <input type="hidden" name="id">
+  		    <div class="input-group form-group">
+            <span class="input-group-addon" id="sizing-addon2">
+              <i class="glyphicon glyphicon-user"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Nama" name="name" aria-describedby="sizing-addon2">
+          </div>
+          <div class="input-group form-group">
+            <span class="input-group-addon" id="sizing-addon2">
+              <i class="glyphicon glyphicon-phone-alt"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Nomor Telepon" name="telp" aria-describedby="sizing-addon2">
+          </div>
+          <div class="input-group form-group">
+            <span class="input-group-addon" id="sizing-addon2">
+              <i class="glyphicon glyphicon-home"></i>
+            </span>
+            <select name="kota_name" class="form-control select2" aria-describedby="sizing-addon2">
+              <% Kota.forEach(kota=>{ %>
+                <option value="<%= kota.id %>"><%= kota.kota_name %></option>
+            <% }); %>
+            </select>
+          </div>
+          <div class="input-group form-group" style="display: inline-block;">
+            <span class="input-group-addon" id="sizing-addon2">
+              <i class="glyphicon glyphicon-tag"></i>
+            </span>
+            <span class="input-group-addon">
+                <input type="radio" name="gender" value="L" id="laki" class="minimal">
+            <label for="laki">Laki-laki</label>
+              </span>
+              <span class="input-group-addon">
+                <input type="radio" name="gender" value="P" id="perempuan" class="minimal"> 
+            <label for="perempuan">Perempuan</label>
+              </span>
+          </div>
+          <div class="input-group form-group">
+            <span class="input-group-addon" id="sizing-addon2">
+              <i class="glyphicon glyphicon-briefcase"></i>
+            </span>
+            <select name="posisi_name" class="form-control select2" aria-describedby="sizing-addon2">
+              <% Posisi.forEach(posisi=>{ %>
+                <option value="<%= posisi.id %>"><%= posisi.posisi_name %></option>
+            <% }); %>
+            </select>
+          </div>
+          <div class="input-group form-group">
+            <span class="input-group-addon" id="sizing-addon2">
+              <i class="glyphicon glyphicon-briefcase"></i>
+            </span>
+            <select name="status_name" class="form-control select2" aria-describedby="sizing-addon2">
+              <% Status.forEach(status=>{ %>
+                <option value="<%= status.id %>"><%= status.status_name %></option>
+            <% }); %>
+            </select>
+          </div>
+  		    <div class="form-group">
+  		      <div class="col-md-12">
+  		          <button type="submit" class="form-control btn btn-primary"> <i class="glyphicon glyphicon-ok"></i> Update Data</button>
+                     </div>
+  		    </div>
+  		  </form>
